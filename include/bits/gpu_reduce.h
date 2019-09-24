@@ -81,6 +81,7 @@ T reduce(sycl_execution_policy_t<KernelName> policy, ContiguousIt first,
                            cl::sycl::access::target::local>
             scratchPad(localRange, cgh);
 
+        std::cout << "Dimitar: Before Parallel_for" << std::endl;
         /* Launch a SYCL kernel using the nd-range constructed above and taking
          * a lambda with an nd-item parameter */
         cgh.parallel_for<KernelName>(ndRange, [=](cl::sycl::nd_item<1> ndItem) {
@@ -101,22 +102,22 @@ T reduce(sycl_execution_policy_t<KernelName> policy, ContiguousIt first,
 
           /* Loop over the size of the work-group creating an offset to the
            * midpoint each time until you reach zero */
-          for (size_t offset = localRange[0] / 2; offset > 0; offset /= 2) {
+          //for (size_t offset = localRange[0] / 2; offset > 0; offset /= 2) {
             /* Mask the segment of the work-group that you want to write back
              * partial reductions to local memory */
-            if (localId < offset) {
+            //if (localId < offset) {
               /* Read the elements in local memory at the indexes of the current
                * work-item and the respective work-item on the other side of the
                * midpoint, pass those to the binary operator, and then write the
                * result to the element of local memory at the index of the
                * current work-item */
-              scratchPad[localId] =
-                  binary_op(scratchPad[localId], scratchPad[localId + offset]);
-            }
+             // scratchPad[localId] =
+             //     binary_op(scratchPad[localId], scratchPad[localId + offset]);
+            //}
             /* Insert a work-group barrier to ensure that each partial reduction
              * is complete before the work-group continues */
-            ndItem.barrier(cl::sycl::access::fence_space::local_space);
-          }
+          //   ndItem.barrier(cl::sycl::access::fence_space::local_space);
+          //}
           /* Once the work-group loop is complete you have a single partial
            * reduction in each work-group, we copy this back to global memory
            * using the current group id to create a new contiguous range of

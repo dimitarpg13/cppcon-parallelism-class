@@ -27,7 +27,7 @@ template <typename T>
 class sycl_execution_policy_t {
  public:
   sycl_execution_policy_t()
-      : queue_{cl::sycl::gpu_selector{}, [=](cl::sycl::exception_list eL) {
+      : queue_{cl::sycl::default_selector{}, [=](cl::sycl::exception_list eL) {
                  try {
                    for (auto& e : eL) {
                      std::rethrow_exception(e);
